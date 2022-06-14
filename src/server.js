@@ -15,13 +15,29 @@ const handleListen = () => console.log(`Listening in http://localhost:3000`);
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
+const serverSockets = [];
+
 wss.on("connection", (serverSocket) => {
-  console.log("connect browser");
+  serverSockets.push(serverSocket);
+  serverSocket["nickname"] = "Anonymous";
+  const nowTime = new Date(Date.now());
+  console.log("Connected to Browser✅");
   serverSocket.on("close", () => console.log("disconnect browser"));
   serverSocket.on("message", (message) => {
-    console.log(message.toString("utf-8"));
+    const { type, payload } = JSON.parse(message);
+    switch (type) {
+      case "new_message":
+        serverSockets.forEach((receiveSocket) => {
+          receiveSocket.send(
+            `${serverSocket.nickname} : ${payload} / ${nowTime.toUTCString()}`
+          );
+        });
+        break;
+      case "nickname":
+        serverSocket["nickname"] = payload;
+        break;
+    }
   });
-  serverSocket.send("hello");
 });
 
 server.listen(3000, handleListen);

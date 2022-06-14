@@ -1,3 +1,5 @@
-# My Discord?
+# My Discord
 
-Zoom Clone Coding using node js, websocket.
+### Description
+
+Discord Clone Coding using node js, websocket.
